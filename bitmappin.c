@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <stdio.h>y
 #include <stdlib.h>
 #include <string.h>
 #include "bitmappin.h"
@@ -33,6 +33,7 @@ int parse_input(int argc, char *argv[])
 		else if(c == '?'){
 			err = 1;
 		}	
+		printf("%s\n\n", optarg);
 	}
 	
 	/* check for command line errors */
@@ -49,11 +50,11 @@ int parse_input(int argc, char *argv[])
 		fprintf(stderr, "%s: missing -o option\n", argv[0]);
 		fprintf(stderr, usage, argv[0]);
 		exit(1);
-	}else if ((in_extension = strchr(g_infile, '.')) == NULL || (strcmp(in_extension, FILE_EXTENSION) != 0 )){
+	}else if ((in_extension = strrchr(g_infile, '.')) == NULL || (strcmp(in_extension, FILE_EXTENSION) != 0 )){
 		fprintf(stderr, "%s: incorrect input file extension\n", argv[0]);
 		fprintf(stderr, usage, argv[0]);
 		exit(1);
-	}else if ((out_extension = strchr(g_outfile, '.')) == NULL || (strcmp(out_extension, FILE_EXTENSION) != 0)){
+	}else if ((out_extension = strrchr(g_outfile, '.')) == NULL || (strcmp(out_extension, FILE_EXTENSION) != 0)){
 		fprintf(stderr, "%s: incorrect output file extension\n", argv[0]); 	
 		fprintf(stderr, usage, argv[0]);
 		exit(1);
@@ -151,7 +152,22 @@ int read_in_file(struct bitmap *bm)
 
 	return 0;
 }
+int color_white(struct bitmap *bm)
+{
+  size_t ret;
+  int i, j;
 
+  for ( i = 0; i < bm->bh.height; i++){
+    for ( j = 0; j < bm->bh.width; j++){
+      bm->data[i][j].green = 255;
+      bm->data[i][j].blue = 255;
+      bm->data[i][j].red = 255;
+    }
+  }
+
+
+  return 0;
+}
 int write_out_file(struct bitmap *bm)
 {
 	FILE *out_file;
@@ -189,6 +205,7 @@ int main(int argc, char *argv[])
 	/* print input and output file names */
 	printf("Input: %s\nOutput: %s\n", g_infile, g_outfile);
 	read_in_file(&bm);
+	color_white(&bm);
 	write_out_file(&bm);
 	return 0;
 }
