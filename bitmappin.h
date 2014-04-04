@@ -30,11 +30,22 @@ struct pixel {
 	unsigned char red;
 };
 
+/* struct bitmap holds the headers and data read in from a bitmap */
 struct bitmap {
 	struct file_header fh;
 	struct bitmap_header bh;
 	struct pixel **data;
 };
 
-
+/* struct transform is a big meta structure for keeping track of
+ * a single run of the bitmappin program. */
+struct transform {
+	struct bitmap; //Working image
+	char *infile;
+	char *outfile;
+        int (*op)(struct transform tr); //Operation to be performed
+	
+	/* Other arguments should go below here */
+};
+	
 #endif //_BITMAPPIN_H_

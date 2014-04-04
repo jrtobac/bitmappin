@@ -6,28 +6,24 @@
 #define FILE_HDR_SIZE 14
 #define BITMAP_HDR_SIZE 40
 #define FILE_AND_BITMAP_HDR_SIZE FILE_HDR_SIZE + BITMAP_HDR_SIZE
-
-/* global variables for input and output file names */
-char *g_infile, *g_outfile;
+#define FILE_EXTENSION ".bmp"
 
 /* used to parse the command line input */
-int parse_input(int argc, char *argv[])
+int parse_input(int argc, char *argv[], struct transform *tr)
 {
-#define FILE_EXTENSION ".bmp"
 	extern char *optarg;
 	int c, err = 0;
 	char iflag = 0, oflag = 0;
 	char *in_extension, *out_extension;
 	static char usage[] = "usage: %s -i infile.bmp -o outfile.bmp\n";
-
 	/* parse the command line arguments -i for input -o for output */
 	while((c = getopt(argc, argv, "i:o:")) != -1){
 		if( c == 'i'){
-			g_infile = optarg;
+			tr->infile = optarg;
 			iflag = 1;
 		}
 		else if(c == 'o'){
-			g_outfile = optarg;
+			tr->outfile = optarg;
 			oflag = 1;
 		}
 		else if(c == '?'){
@@ -184,11 +180,17 @@ int write_out_file(struct bitmap *bm)
 
 int main(int argc, char *argv[])
 {
-	struct bitmap bm;
-	parse_input(argc, argv);
+	struct transform tr;
+	parse_input(argc, argv, &tr);
 	/* print input and output file names */
 	printf("Input: %s\nOutput: %s\n", g_infile, g_outfile);
 	read_in_file(&bm);
+
+	tr->op(tr);
+
+
+	op = max_something;
+
 	write_out_file(&bm);
 	return 0;
 }
