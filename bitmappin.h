@@ -34,13 +34,14 @@ struct pixel {
 struct bitmap {
 	struct file_header fh;
 	struct bitmap_header bh;
-	struct pixel **data;
+  //  	struct pixel **data;
+  	struct pixel *data;
 };
 
 /* struct transform is a big meta structure for keeping track of
  * a single run of the bitmappin program. */
 struct transform {
-	struct bitmap; //Working image
+	struct bitmap bm; //Working image
 	char *infile;
 	char *outfile;
         int (*op)(struct transform tr); //Operation to be performed
