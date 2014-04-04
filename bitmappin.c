@@ -105,14 +105,15 @@ void print_bitmap_info(struct bitmap *bm)
 
 void print_bitmap_data(struct bitmap *bm)
 {
-	int i;
-	int j;
+  int y;
+  int x;
 
-		for (i = 0; i < bm->bh.height; i++) {
-		for (j = 0; j < bm->bh.width; j++) {
-			printf("data[%d][%d]:blue:%x green:%x red:%x\n", i, j, bm->data[i][j].blue, bm->data[i][j].green, bm->data[i][j].red);
-		}
-	}
+	 
+  for (y = 0; y < bm->bh.height; y++) {
+    for (x = 0; x < bm->bh.width; x++) {
+      printf("data[%d][%d]:blue:%x green:%x red:%x\n", x, y, bm->data[bm->bh.height * y + x].blue, bm->data[bm->bh.height * y + x].green, bm->data[].red);
+    }
+  }
 }
 
 int read_in_file(struct bitmap *bm)
@@ -138,7 +139,21 @@ int read_in_file(struct bitmap *bm)
 
 	//TODO SEEK to start of data
 
+	bm->data = (struct pixel *) malloc(sizeof(struct pixel) * bm->bh.height * bm->bh.width);
+	if(bm->data == NULL){
+	  fprintf(stderr, "Failed to malloc bitmap data\n");
+	  exit(-3);
+	}
 
+	for(i = 0; i < bm->bh.height * bm->bh.width; i+=bm->bh.width){
+	  ret = fread(&bm->data[i], sizeof(struct pixel), bm->bh.width, in_file);
+	  if(ret != bm->bh.width){
+	    fprintf(stderr, "Failed to read bitmap data\n");
+	    exit(-4);
+	  }
+	}
+
+	/*
 	bm->data = (struct pixel **)
 		malloc(sizeof(struct pixel *) * bm->bh.height);
 	if (bm->data == NULL) {
@@ -162,7 +177,7 @@ int read_in_file(struct bitmap *bm)
 			fprintf(stderr, "Failed to read bitmap data\n");
 			exit(-5);
 		}
-	}
+	}*/
 
 		fclose(in_file);
 
@@ -170,7 +185,7 @@ int read_in_file(struct bitmap *bm)
 
 	return 0;
 }
-
+/*
 void max_green(struct bitmap *bm)
 {
   int i, j;
@@ -215,7 +230,7 @@ void color_white(struct bitmap *bm)
   max_red(bm);
 
 }
-
+*/
 int write_out_file(struct bitmap *bm)
 {
 	FILE *out_file;
@@ -233,14 +248,17 @@ int write_out_file(struct bitmap *bm)
 		fprintf(stderr, "Failed to write file headers\n");
 		exit(-7);
 	}
-	
-	for (i = 0; i < bm->bh.height; i++) {
-	 		ret = fwrite(bm->data[i], sizeof(struct pixel), bm->bh.width, out_file);
+
+
+	for (i = 0; i < bm->bh.height * bm->bh.width; i+=bm->bh.width) {
+	  //ret = fwrite(bm->data[i], sizeof(struct pixel), bm->bh.width, out_file);
+	 		ret = fwrite(&bm->data[i], sizeof(struct pixel), bm->bh.width, out_file);
 		if (ret != bm->bh.width) {
 			fprintf(stderr, "Failed writing data to file\n");
 			exit(-8);
 		}
 	}
+
 	return 0;
 
 		fclose(out_file);
@@ -257,7 +275,7 @@ int main(int argc, char *argv[])
 	read_in_file(&bm);
 
 	/* color picture according to flags */
-		if(g_w_flag == 1){
+	/*		if(g_w_flag == 1){
 	  color_white(&bm);	  
 	}
 	else{ 
@@ -270,7 +288,7 @@ int main(int argc, char *argv[])
 	  if (g_r_flag == 1){
 	    max_red(&bm);
 	  }
-	}
+	  }*/
 
 	write_out_file(&bm);
 

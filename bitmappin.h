@@ -33,7 +33,8 @@ struct pixel {
 struct bitmap {
 	struct file_header fh;
 	struct bitmap_header bh;
-  	struct pixel **data;
+  //  	struct pixel **data;
+  	struct pixel *data;
 };
 
 
