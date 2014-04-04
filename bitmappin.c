@@ -111,7 +111,7 @@ void print_bitmap_data(struct bitmap *bm)
 	 
   for (y = 0; y < bm->bh.height; y++) {
     for (x = 0; x < bm->bh.width; x++) {
-      printf("data[%d][%d]:blue:%x green:%x red:%x\n", x, y, bm->data[bm->bh.height * y + x].blue, bm->data[bm->bh.height * y + x].green, bm->data[].red);
+      printf("data[%d][%d]:blue:%x green:%x red:%x\n", x, y, bm->data[bm->bh.height * y + x].blue, bm->data[bm->bh.height * y + x].green, bm->data[bm->bh.height * y + x].red);
     }
   }
 }
@@ -139,12 +139,14 @@ int read_in_file(struct bitmap *bm)
 
 	//TODO SEEK to start of data
 
+	/* malloc bitmap data */
 	bm->data = (struct pixel *) malloc(sizeof(struct pixel) * bm->bh.height * bm->bh.width);
 	if(bm->data == NULL){
 	  fprintf(stderr, "Failed to malloc bitmap data\n");
 	  exit(-3);
 	}
-
+	
+	/* read in bitmap data */
 	for(i = 0; i < bm->bh.height * bm->bh.width; i+=bm->bh.width){
 	  ret = fread(&bm->data[i], sizeof(struct pixel), bm->bh.width, in_file);
 	  if(ret != bm->bh.width){
@@ -153,75 +155,52 @@ int read_in_file(struct bitmap *bm)
 	  }
 	}
 
-	/*
-	bm->data = (struct pixel **)
-		malloc(sizeof(struct pixel *) * bm->bh.height);
-	if (bm->data == NULL) {
-		fprintf(stderr, "Failed to malloc rows\n");
-		exit(-3);
-	}
-	
-	for (i = 0; i < bm->bh.height; i++) {
-		bm->data[i] = (struct pixel *)
-			malloc(sizeof(struct pixel) * bm->bh.width);
-		if (bm->data[i] == NULL) {
-			fprintf(stderr, "Failed to malloc col\n");
-			exit(-4);
-		}
-	}
-
-	for (i = 0; i < bm->bh.height; i++) {
-		ret = fread(bm->data[i], sizeof(struct pixel), 
-			    bm->bh.width, in_file);
-		if (ret != bm->bh.width) {
-			fprintf(stderr, "Failed to read bitmap data\n");
-			exit(-5);
-		}
-	}*/
-
 		fclose(in_file);
 
-		//	print_bitmap_data(bm);
+		//print_bitmap_data(bm);
 
 	return 0;
 }
-/*
+
+/* max out green pixel values */
 void max_green(struct bitmap *bm)
 {
-  int i, j;
+  int x, y;
   
-  for ( i = 0; i < bm->bh.height; i++){
-    for ( j = 0; j < bm->bh.width; j++){
-      bm->data[i][j].green =  MAX_PIXEL_VALUE;
+  for ( y = 0; y < bm->bh.height; y++){
+    for ( x = 0; x < bm->bh.width; x++){
+      bm->data[bm->bh.height * y + x].green =  MAX_PIXEL_VALUE;
     }
   }
-
 }
 
+/* max out blue pixel values */
 void max_blue(struct bitmap *bm)
 {
-  int i, j;
+  int x, y;
 
-  for ( i = 0; i < bm->bh.height; i++){
-    for ( j = 0; j < bm->bh.width; j++){
-      bm->data[i][j].blue =  MAX_PIXEL_VALUE;
+  for ( y = 0; y < bm->bh.height; y++){
+    for ( x = 0; x < bm->bh.width; x++){
+      bm->data[bm->bh.height * y + x].blue =  MAX_PIXEL_VALUE;
     }
   }
 
 }
 
+/* max out red pixel values */
 void max_red(struct bitmap *bm)
 {
-  int i, j;
+  int x, y;
 
-  for ( i = 0; i < bm->bh.height; i++){
-    for ( j = 0; j < bm->bh.width; j++){
-      bm->data[i][j].red =  MAX_PIXEL_VALUE;
+  for ( y = 0; y < bm->bh.height; y++){
+    for ( x = 0; x < bm->bh.width; x++){
+      bm->data[bm->bh.height * y + x].red =  MAX_PIXEL_VALUE;
     }
   }
 
 }
 
+/* max out all rgb pixel values */
 void color_white(struct bitmap *bm)
 {
 
@@ -230,13 +209,15 @@ void color_white(struct bitmap *bm)
   max_red(bm);
 
 }
-*/
+
+/* write the output image */
 int write_out_file(struct bitmap *bm)
 {
 	FILE *out_file;
 	size_t ret;
 	int i;
-
+	
+	/* open file and write header */
 	out_file = fopen(g_outfile, "w");
 	if (!out_file) {
 		fprintf(stderr, "Failed to open outfile:%s\n", g_outfile);
@@ -249,9 +230,8 @@ int write_out_file(struct bitmap *bm)
 		exit(-7);
 	}
 
-
+	/* write the bitmap data */
 	for (i = 0; i < bm->bh.height * bm->bh.width; i+=bm->bh.width) {
-	  //ret = fwrite(bm->data[i], sizeof(struct pixel), bm->bh.width, out_file);
 	 		ret = fwrite(&bm->data[i], sizeof(struct pixel), bm->bh.width, out_file);
 		if (ret != bm->bh.width) {
 			fprintf(stderr, "Failed writing data to file\n");
@@ -259,26 +239,27 @@ int write_out_file(struct bitmap *bm)
 		}
 	}
 
-	return 0;
-
 		fclose(out_file);
 
 		free(bm->data);
+
+	return 0;
+
 }
 
 int main(int argc, char *argv[])
 {
 	struct bitmap bm;
 	parse_input(argc, argv);
+
 	/* print input and output file names */
 	printf("Input: %s\nOutput: %s\n", g_infile, g_outfile);
 	read_in_file(&bm);
 
 	/* color picture according to flags */
-	/*		if(g_w_flag == 1){
+  	if(g_w_flag == 1){
 	  color_white(&bm);	  
-	}
-	else{ 
+	}else{ 
 	  if(g_g_flag == 1){
 	    max_green(&bm);
 	  }
@@ -288,7 +269,7 @@ int main(int argc, char *argv[])
 	  if (g_r_flag == 1){
 	    max_red(&bm);
 	  }
-	  }*/
+	 }
 
 	write_out_file(&bm);
 
