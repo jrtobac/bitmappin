@@ -1,4 +1,4 @@
-#include <stdio.h>y
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "bitmappin.h"
@@ -7,8 +7,11 @@
 #define BITMAP_HDR_SIZE 40
 #define FILE_AND_BITMAP_HDR_SIZE FILE_HDR_SIZE + BITMAP_HDR_SIZE
 
+#define MAX_PIXEL_VALUE 255
+
 /* global variables for input and output file names */
 char *g_infile, *g_outfile;
+char g_r_flag = 0, g_g_flag = 0, g_b_flag = 0, g_w_flag = 0;
 
 /* used to parse the command line input */
 int parse_input(int argc, char *argv[])
@@ -16,19 +19,31 @@ int parse_input(int argc, char *argv[])
 #define FILE_EXTENSION ".bmp"
 	extern char *optarg;
 	int c, err = 0;
-	char iflag = 0, oflag = 0;
+	char i_flag = 0, o_flag = 0;
 	char *in_extension, *out_extension;
-	static char usage[] = "usage: %s -i infile.bmp -o outfile.bmp\n";
+	static char usage[] = "usage: %s -i infile.bmp [OPTIONS] -o outfile.bmp\n\nOPTIONS:\nw,r,g,b\n";
 
 	/* parse the command line arguments -i for input -o for output */
-	while((c = getopt(argc, argv, "i:o:")) != -1){
+	while((c = getopt(argc, argv, "wrgbi:o:")) != -1){
 		if( c == 'i'){
 			g_infile = optarg;
-			iflag = 1;
+			i_flag = 1;
 		}
 		else if(c == 'o'){
 			g_outfile = optarg;
-			oflag = 1;
+			o_flag = 1;
+		}
+		else if(c == 'w'){
+		  g_w_flag =1;
+		}
+		else if(c == 'b'){
+		  g_b_flag = 1;
+		}
+		else if(c == 'g'){
+		  g_g_flag = 1;
+		}
+		else if(c == 'r'){
+		  g_r_flag = 1;
 		}
 		else if(c == '?'){
 			err = 1;
@@ -42,11 +57,11 @@ int parse_input(int argc, char *argv[])
 		fprintf(stderr, usage, argv[0]);
 		exit(1);
 	}
-	else if(iflag == 0){
+	else if(i_flag == 0){
 		fprintf(stderr, "%s: missing -i option\n", argv[0]);
 		fprintf(stderr, usage, argv[0]);
 		exit(1);
-	}else if(oflag == 0){
+	}else if(o_flag == 0){
 		fprintf(stderr, "%s: missing -o option\n", argv[0]);
 		fprintf(stderr, usage, argv[0]);
 		exit(1);
@@ -93,7 +108,7 @@ void print_bitmap_data(struct bitmap *bm)
 	int i;
 	int j;
 
-	for (i = 0; i < bm->bh.height; i++) {
+		for (i = 0; i < bm->bh.height; i++) {
 		for (j = 0; j < bm->bh.width; j++) {
 			printf("data[%d][%d]:blue:%x green:%x red:%x\n", i, j, bm->data[i][j].blue, bm->data[i][j].green, bm->data[i][j].red);
 		}
@@ -123,6 +138,7 @@ int read_in_file(struct bitmap *bm)
 
 	//TODO SEEK to start of data
 
+
 	bm->data = (struct pixel **)
 		malloc(sizeof(struct pixel *) * bm->bh.height);
 	if (bm->data == NULL) {
@@ -148,26 +164,58 @@ int read_in_file(struct bitmap *bm)
 		}
 	}
 
-//	print_bitmap_data(bm);
+		fclose(in_file);
+
+		//	print_bitmap_data(bm);
 
 	return 0;
 }
-int color_white(struct bitmap *bm)
+
+void max_green(struct bitmap *bm)
 {
-  size_t ret;
+  int i, j;
+  
+  for ( i = 0; i < bm->bh.height; i++){
+    for ( j = 0; j < bm->bh.width; j++){
+      bm->data[i][j].green =  MAX_PIXEL_VALUE;
+    }
+  }
+
+}
+
+void max_blue(struct bitmap *bm)
+{
   int i, j;
 
   for ( i = 0; i < bm->bh.height; i++){
     for ( j = 0; j < bm->bh.width; j++){
-      bm->data[i][j].green = 255;
-      bm->data[i][j].blue = 255;
-      bm->data[i][j].red = 255;
+      bm->data[i][j].blue =  MAX_PIXEL_VALUE;
     }
   }
 
-
-  return 0;
 }
+
+void max_red(struct bitmap *bm)
+{
+  int i, j;
+
+  for ( i = 0; i < bm->bh.height; i++){
+    for ( j = 0; j < bm->bh.width; j++){
+      bm->data[i][j].red =  MAX_PIXEL_VALUE;
+    }
+  }
+
+}
+
+void color_white(struct bitmap *bm)
+{
+
+  max_green(bm);
+  max_blue(bm);
+  max_red(bm);
+
+}
+
 int write_out_file(struct bitmap *bm)
 {
 	FILE *out_file;
@@ -187,15 +235,17 @@ int write_out_file(struct bitmap *bm)
 	}
 	
 	for (i = 0; i < bm->bh.height; i++) {
-		ret = fwrite(bm->data[i], sizeof(struct pixel), 
-			     bm->bh.width, out_file);
+	 		ret = fwrite(bm->data[i], sizeof(struct pixel), bm->bh.width, out_file);
 		if (ret != bm->bh.width) {
 			fprintf(stderr, "Failed writing data to file\n");
 			exit(-8);
 		}
 	}
 	return 0;
-	//TODO Close output file and input file and free malloc'ed stuff
+
+		fclose(out_file);
+
+		free(bm->data);
 }
 
 int main(int argc, char *argv[])
@@ -205,7 +255,24 @@ int main(int argc, char *argv[])
 	/* print input and output file names */
 	printf("Input: %s\nOutput: %s\n", g_infile, g_outfile);
 	read_in_file(&bm);
-	color_white(&bm);
+
+	/* color picture according to flags */
+		if(g_w_flag == 1){
+	  color_white(&bm);	  
+	}
+	else{ 
+	  if(g_g_flag == 1){
+	    max_green(&bm);
+	  }
+	  if (g_b_flag == 1){
+	    max_blue(&bm);
+	  }
+	  if (g_r_flag == 1){
+	    max_red(&bm);
+	  }
+	}
+
 	write_out_file(&bm);
+
 	return 0;
 }
