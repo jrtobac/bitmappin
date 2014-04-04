@@ -30,7 +30,7 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 		}
 		else if(c == 'o'){
 			tr->outfile = optarg;
-			oflag = 1;
+			o_flag = 1;
 		}
 		else if(c == 'w'){
 		  g_w_flag =1;
@@ -64,11 +64,11 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 		fprintf(stderr, "%s: missing -o option\n", argv[0]);
 		fprintf(stderr, usage, argv[0]);
 		exit(1);
-	}else if ((in_extension = strrchr(g_infile, '.')) == NULL || (strcmp(in_extension, FILE_EXTENSION) != 0 )){
+	}else if ((in_extension = strrchr(tr->infile, '.')) == NULL || (strcmp(in_extension, FILE_EXTENSION) != 0 )){
 		fprintf(stderr, "%s: incorrect input file extension\n", argv[0]);
 		fprintf(stderr, usage, argv[0]);
 		exit(1);
-	}else if ((out_extension = strrchr(g_outfile, '.')) == NULL || (strcmp(out_extension, FILE_EXTENSION) != 0)){
+	}else if ((out_extension = strrchr(tr->outfile, '.')) == NULL || (strcmp(out_extension, FILE_EXTENSION) != 0)){
 		fprintf(stderr, "%s: incorrect output file extension\n", argv[0]); 	
 		fprintf(stderr, usage, argv[0]);
 		exit(1);
@@ -80,7 +80,7 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 	return 0;
 }
 
-void print_bitmap_info(struct bitmap *bm)
+/*void print_bitmap_info(struct bitmap *bm)
 {
 	printf("--- File:%s ---\n", g_infile);
 	printf("Magic:%x\n", bm->fh.file_type);
@@ -100,7 +100,7 @@ void print_bitmap_info(struct bitmap *bm)
 	printf("Vertical Resolution:%d\n", bm->bh.vert_res);
 	printf("Colors Used:%d\n", bm->bh.cols_used);
 	printf("Important Colors:%d\n", bm->bh.cols_imp);
-}
+	}*/
 
 void print_bitmap_data(struct bitmap *bm)
 {
@@ -110,7 +110,7 @@ void print_bitmap_data(struct bitmap *bm)
 	 
   for (y = 0; y < bm->bh.height; y++) {
     for (x = 0; x < bm->bh.width; x++) {
-      printf("data[%d][%d]:blue:%x green:%x red:%x\n", x, y, bm->data[bm->bh.height * y + x].blue, bm->data[bm->bh.height * y + x].green, bm->data[].red);
+      printf("data[%d][%d]:blue:%x green:%x red:%x\n", x, y, bm->data[bm->bh.height * y + x].blue, bm->data[bm->bh.height * y + x].green, bm->data[bm->bh.height * y + x].red);
     }
   }
 }
@@ -131,7 +131,7 @@ int read_in_file(struct transform *tr)
 
 	in_file = fopen(tr->infile, "r");
 	if (!in_file) {
-		fprintf(stderr, "Error opening input file: %s\n", g_infile);
+		fprintf(stderr, "Error opening input file: %s\n", tr->infile);
 		return -1;
 	}
 
@@ -148,12 +148,14 @@ int read_in_file(struct transform *tr)
 		goto out;
 	}
 
+	/* malloc bitmap data */
 	tr->bm.data = (struct pixel *) malloc(sizeof(struct pixel) * tr->bm.bh.height * tr->bm.bh.width);
 	if(tr->bm.data == NULL){
 		fprintf(stderr, "Failed to malloc bitmap data\n");
 		goto out;
 	}
-
+	
+	/* read in bitmap data */
 	for(i = 0; i < tr->bm.bh.height * tr->bm.bh.width; i+=tr->bm.bh.width){
 		ret = fread(&tr->bm.data[i], sizeof(struct pixel), tr->bm.bh.width, in_file);
 		if(ret != tr->bm.bh.width){
@@ -161,33 +163,7 @@ int read_in_file(struct transform *tr)
 			goto out;
 		}
 	}
-
-	/*
-	bm->data = (struct pixel **)
-		malloc(sizeof(struct pixel *) * bm->bh.height);
-	if (bm->data == NULL) {
-		fprintf(stderr, "Failed to malloc rows\n");
-		exit(-3);
-	}
 	
-	for (i = 0; i < bm->bh.height; i++) {
-		bm->data[i] = (struct pixel *)
-			malloc(sizeof(struct pixel) * bm->bh.width);
-		if (bm->data[i] == NULL) {
-			fprintf(stderr, "Failed to malloc col\n");
-			exit(-4);
-		}
-	}
-
-	for (i = 0; i < bm->bh.height; i++) {
-		ret = fread(bm->data[i], sizeof(struct pixel), 
-			    bm->bh.width, in_file);
-		if (ret != bm->bh.width) {
-			fprintf(stderr, "Failed to read bitmap data\n");
-			exit(-5);
-		}
-	}*/
-
 	fclose(in_file);
 	return 0;
 
@@ -199,43 +175,46 @@ int read_in_file(struct transform *tr)
 	}
 	return -1;
 }
-/*
+
+/* max out green pixel values */
 void max_green(struct bitmap *bm)
 {
-  int i, j;
+  int x, y;
   
-  for ( i = 0; i < bm->bh.height; i++){
-    for ( j = 0; j < bm->bh.width; j++){
-      bm->data[i][j].green =  MAX_PIXEL_VALUE;
+  for ( y = 0; y < bm->bh.height; y++){
+    for ( x = 0; x < bm->bh.width; x++){
+      bm->data[bm->bh.height * y + x].green =  MAX_PIXEL_VALUE;
     }
   }
-
 }
 
+/* max out blue pixel values */
 void max_blue(struct bitmap *bm)
 {
-  int i, j;
+  int x, y;
 
-  for ( i = 0; i < bm->bh.height; i++){
-    for ( j = 0; j < bm->bh.width; j++){
-      bm->data[i][j].blue =  MAX_PIXEL_VALUE;
+  for ( y = 0; y < bm->bh.height; y++){
+    for ( x = 0; x < bm->bh.width; x++){
+      bm->data[bm->bh.height * y + x].blue =  MAX_PIXEL_VALUE;
     }
   }
 
 }
 
+/* max out red pixel values */
 void max_red(struct bitmap *bm)
 {
-  int i, j;
+  int x, y;
 
-  for ( i = 0; i < bm->bh.height; i++){
-    for ( j = 0; j < bm->bh.width; j++){
-      bm->data[i][j].red =  MAX_PIXEL_VALUE;
+  for ( y = 0; y < bm->bh.height; y++){
+    for ( x = 0; x < bm->bh.width; x++){
+      bm->data[bm->bh.height * y + x].red =  MAX_PIXEL_VALUE;
     }
   }
 
 }
 
+/* max out all rgb pixel values */
 void color_white(struct bitmap *bm)
 {
 
@@ -244,7 +223,6 @@ void color_white(struct bitmap *bm)
   max_red(bm);
 
 }
-*/
 
 /**@brief write_out_file writes the contents of the bitmap structure
  *        in tr->bm to the file specified by tr->outfile.
@@ -257,10 +235,11 @@ int write_out_file(struct transform *tr)
 	FILE *out_file;
 	size_t ret;
 	int i;
-
-	out_file = fopen(g_outfile, "w");
+	
+	/* open file and write header */
+	out_file = fopen(tr->outfile, "w");
 	if (!out_file) {
-		fprintf(stderr, "Failed to open outfile:%s\n", g_outfile);
+		fprintf(stderr, "Failed to open outfile:%s\n", tr->outfile);
 		goto out;
 	}
 
@@ -270,10 +249,9 @@ int write_out_file(struct transform *tr)
 		goto out;
 	}
 
-
+	/* write the bitmap data */
 	for (i = 0; i < tr->bm.bh.height * tr->bm.bh.width; i+=tr->bm.bh.width) {
-	  //ret = fwrite(tr->bm.data[i], sizeof(struct pixel), tr->bm.bh.width, out_file);
-		ret = fwrite(&tr->bm.data[i], sizeof(struct pixel), tr->bm.bh.width, out_file);
+	 		ret = fwrite(&tr->bm.data[i], sizeof(struct pixel), tr->bm.bh.width, out_file);
 		if (ret != tr->bm.bh.width) {
 			fprintf(stderr, "Failed writing data to file\n");
 			goto out;
@@ -297,29 +275,28 @@ int main(int argc, char *argv[])
 	struct transform tr;
 	int ret;
 
-	tr->bm->bitmap.data = NULL;
+	tr.bm.data = NULL;
 
 	parse_input(argc, argv, &tr);
 	/* print input and output file names */
 	read_in_file(&tr);
 
-	ret = tr->op(&tr);
+//	ret = tr.op(&tr);
 
 	/* color picture according to flags */
-	/*		if(g_w_flag == 1){
-	  color_white(&bm);	  
+  	if(g_w_flag == 1){
+		color_white(&tr.bm);	  
+	}else{ 
+		if(g_g_flag == 1){
+			max_green(&tr.bm);
+		}
+		if (g_b_flag == 1){
+			max_blue(&tr.bm);
+		}
+		if (g_r_flag == 1){
+			max_red(&tr.bm);
+		}
 	}
-	else{ 
-	  if(g_g_flag == 1){
-	    max_green(&bm);
-	  }
-	  if (g_b_flag == 1){
-	    max_blue(&bm);
-	  }
-	  if (g_r_flag == 1){
-	    max_red(&bm);
-	  }
-	  }*/
 
 	write_out_file(&tr);
 
