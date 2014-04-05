@@ -1,4 +1,5 @@
 #include "operations.h"
+#include "max_color.h"
 
 /**@brief max_color maxes out specified colors in the input image.
  *
