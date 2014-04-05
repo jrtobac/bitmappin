@@ -8,6 +8,8 @@
 
 /**@brief Parses the command line input and populates tr with the info.
  *
+ * @arg argc is the number of command line arguments passed
+ * @arg argv is the list of command line arguments passed
  * @arg tr is the structure that will contain all the info necessary
  *      for performing the transformation on the image.
  * @ret Return 0 on success and a negative number on failure.
