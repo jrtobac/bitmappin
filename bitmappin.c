@@ -224,7 +224,8 @@ int main(int argc, char *argv[])
 
 	init_transform(&tr);
 
-	parse_input(argc, argv, &tr);
+	ret = parse_input(argc, argv, &tr);
+	if (ret < 0) return -1;
 
 	ret = read_in_file(&tr);
 	if (ret < 0) return -1;
