@@ -6,7 +6,6 @@ SOURCES=$(wildcard *.c)
 OBJECTS=$(SOURCES:.c=.o)
 
 $(EXEC): $(OBJECTS)
-all: bitmappin.c
 	$(CC) $(CFLAGS) $(OBJECTS) -o $(EXEC)
 
 %.o: %.c

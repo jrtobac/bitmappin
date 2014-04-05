@@ -30,7 +30,7 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 	}
 
 	/* parse the command line arguments -i for input -o for output */
-	while((c = getopt(argc, argv, "wrgbi:o:")) != -1){
+	while((c = getopt(argc, argv, "wrgbs:i:o:")) != -1){
 		if( c == 'i'){
 			tr->infile = optarg;
 			i_flag = 1;
@@ -38,6 +38,16 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 		else if(c == 'o'){
 			tr->outfile = optarg;
 			o_flag = 1;
+		}
+		else if (c == 's') {
+			tr->bitplane_slice_num = *optarg - '0';
+			if (tr->bitplane_slice_num < 0 ||
+			    tr->bitplane_slice_num > 7) {
+				fprintf(stderr, 
+					"bitplane slice number must be 0-7\n");
+				return -1;
+			}
+			tr->op = bitplane_slice;
 		}
 		else if(c == 'w'){
 			tr->w_flag = 1;
@@ -217,6 +227,7 @@ void init_transform(struct transform *tr)
 	tr->g_flag = 0;
 	tr->b_flag = 0;
 	tr->w_flag = 0;
+	tr->bitplane_slice_num = 0;
 }
 
 int main(int argc, char *argv[])
