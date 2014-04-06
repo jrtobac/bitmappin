@@ -19,7 +19,7 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 	char i_flag = 0, o_flag = 0;
 	char *in_extension, *out_extension;
 
-	static char usage[] = "usage: %s -i infile.bmp [OPTIONS] -o outfile.bmp\n\nOPTIONS:\nw,r,g,b\n";
+	static char usage[] = "usage: %s -i infile.bmp [OPTIONS] -o outfile.bmp\n\nOPTIONS:\nw,r,g,b,n\n";
 
 	if(argc < 5){
 		fprintf(stderr, "%s too few arguments\n", argv[0]);
@@ -28,7 +28,7 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 	}
 
 	/* parse the command line arguments -i for input -o for output */
-	while((c = getopt(argc, argv, "wrgbi:o:")) != -1){
+	while((c = getopt(argc, argv, "wfrgbni:o:")) != -1){
 		if( c == 'i'){
 			tr->infile = optarg;
 			i_flag = 1;
@@ -52,6 +52,12 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 		else if(c == 'r'){
 			tr->r_flag = 1;
 			tr->op = max_color;
+		}
+		else if(c == 'n'){
+			tr->op = image_negative;
+		}
+		else if(c == 'f'){
+			tr->op = flip;
 		}
 		else if(c == '?'){
 			err = 1;
