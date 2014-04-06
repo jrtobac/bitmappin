@@ -43,7 +43,6 @@ void max_blue(struct bitmap *bm)
 {
 	int x, y;
 
-
 	for ( y = 0; y < bm->bh.height; y++){
 		for ( x = 0; x < bm->bh.width; x++){
 			bm->data[bm->bh.height * y + x].blue =  MAX_PIXEL_VALUE;
@@ -62,15 +61,12 @@ void max_red(struct bitmap *bm)
 			bm->data[bm->bh.height * y + x].red =  MAX_PIXEL_VALUE;
 		}
 	}
-
 }
 
 /* max out all rgb pixel values */
 void color_white(struct bitmap *bm)
 {
-
 	max_green(bm);
 	max_blue(bm);
 	max_red(bm);
-
 }

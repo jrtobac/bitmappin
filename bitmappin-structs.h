@@ -58,6 +58,7 @@ struct transform {
 	char g_flag; //Max green in image
 	char b_flag; //Max blue in image
 	char w_flag; //Turn image white
+	char bitplane_slice_num; //Which bitplane to slice
 };
 
 #endif //_BITMAPPIN_STRUCTS_H_

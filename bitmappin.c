@@ -8,6 +8,8 @@
 
 /**@brief Parses the command line input and populates tr with the info.
  *
+ * @arg argc is the number of command line arguments passed
+ * @arg argv is the list of command line arguments passed
  * @arg tr is the structure that will contain all the info necessary
  *      for performing the transformation on the image.
  * @ret Return 0 on success and a negative number on failure.
@@ -28,7 +30,8 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 	}
 
 	/* parse the command line arguments -i for input -o for output */
-	while((c = getopt(argc, argv, "wfrgbni:o:")) != -1){
+	while((c = getopt(argc, argv, "wfrgbns:i:o:")) != -1){
+
 		if( c == 'i'){
 			tr->infile = optarg;
 			i_flag = 1;
@@ -36,6 +39,16 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 		else if(c == 'o'){
 			tr->outfile = optarg;
 			o_flag = 1;
+		}
+		else if (c == 's') {
+			tr->bitplane_slice_num = *optarg - '0';
+			if (tr->bitplane_slice_num < 0 ||
+			    tr->bitplane_slice_num > 7) {
+				fprintf(stderr, 
+					"bitplane slice number must be 0-7\n");
+				return -1;
+			}
+			tr->op = bitplane_slice;
 		}
 		else if(c == 'w'){
 			tr->w_flag = 1;
@@ -221,6 +234,7 @@ void init_transform(struct transform *tr)
 	tr->g_flag = 0;
 	tr->b_flag = 0;
 	tr->w_flag = 0;
+	tr->bitplane_slice_num = 0;
 }
 
 int main(int argc, char *argv[])
