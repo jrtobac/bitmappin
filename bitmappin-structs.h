@@ -49,6 +49,7 @@ struct transform {
 	struct bitmap bm; //Working image
 	char *infile;
 	char *outfile;
+	char *helpfile;
         int (*op)(struct transform *); //Operation to be performed
 	
 	/* Other arguments should go below here */
