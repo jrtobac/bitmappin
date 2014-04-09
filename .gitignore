@@ -2,3 +2,5 @@ bitmappin
 *.o
 *.bmp
 output_pictures
+*~
+*#
