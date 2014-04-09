@@ -15,17 +15,20 @@ int flip(struct transform *tr)
 
 	for(y = 0; y < tr->bm.bh.height >> DIVIDE_BY_TWO; y++){
 		for(x = 0; x < tr->bm.bh.width; x++){
+			/* flip green */
 			temp = tr->bm.data[tr->bm.bh.height * y + x].green;
-			tr->bm.data[tr->bm.bh.height * y + x].green = tr->bm.data[(tr->bm.bh.height * tr->bm.bh.width) - (tr->bm.bh.height * y + x)].green;	       
-			tr->bm.data[(tr->bm.bh.height * tr->bm.bh.width) - (tr->bm.bh.height * y + x)].green = temp;
+			tr->bm.data[tr->bm.bh.height * y + x].green = tr->bm.data[(tr->bm.bh.height * tr->bm.bh.width - tr->bm.bh.width) - (tr->bm.bh.height * y - x)].green;	       
+			tr->bm.data[(tr->bm.bh.height * tr->bm.bh.width - tr->bm.bh.width) - (tr->bm.bh.height * y - x)].green = temp;
 			
+			/* flip blue */
 			temp = tr->bm.data[tr->bm.bh.height * y + x].blue;
-			tr->bm.data[tr->bm.bh.height * y + x].blue = tr->bm.data[(tr->bm.bh.height * tr->bm.bh.width) - (tr->bm.bh.height * y + x)].blue;	       
-			tr->bm.data[(tr->bm.bh.height * tr->bm.bh.width) - (tr->bm.bh.height * y + x)].blue = temp;
+			tr->bm.data[tr->bm.bh.height * y + x].blue = tr->bm.data[(tr->bm.bh.height * tr->bm.bh.width - tr->bm.bh.width) - (tr->bm.bh.height * y - x)].blue;	       
+			tr->bm.data[(tr->bm.bh.height * tr->bm.bh.width - tr->bm.bh.width) - (tr->bm.bh.height * y - x)].blue = temp;
 			
+			/* flip red */
 			temp = tr->bm.data[tr->bm.bh.height * y + x].red;
-			tr->bm.data[tr->bm.bh.height * y + x].red = tr->bm.data[(tr->bm.bh.height * tr->bm.bh.width) - (tr->bm.bh.height * y + x)].red;	       
-			tr->bm.data[(tr->bm.bh.height * tr->bm.bh.width) - (tr->bm.bh.height * y + x)].red = temp;
+			tr->bm.data[tr->bm.bh.height * y + x].red = tr->bm.data[(tr->bm.bh.height * tr->bm.bh.width - tr->bm.bh.width) - (tr->bm.bh.height * y - x)].red;	       
+			tr->bm.data[(tr->bm.bh.height * tr->bm.bh.width - tr->bm.bh.width) - (tr->bm.bh.height * y - x)].red = temp;
 		}
 	}
 	return 0;
