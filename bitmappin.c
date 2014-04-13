@@ -5,6 +5,7 @@
 #include "bitmappin.h"
 #include "operations.h"
 #include "print.h"
+#include "help.h"
 
 /**@brief Parses the command line input and populates tr with the info.
  *
@@ -24,18 +25,15 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 
 	static char usage[] = "usage: %s -i infile.bmp [OPTIONS] -o outfile.bmp\n\nOPTIONS:\nw,r,g,b,f,s,n\n";
 
-	/* check for help flag before anything */
-	if( !strcmp(argv[1], "-h")){
-		help_menu(tr);
-		exit(0);
-	}else if(argc < 5){
+	
+/*	if(argc < 5){
 		fprintf(stderr, "%s too few arguments\n", argv[0]);
 		fprintf(stderr, usage, argv[0]);
 		return -1;
-	}
+		}*/
 
 	/* parse the command line arguments -i for input -o for output */
-	while((c = getopt(argc, argv, "wfrgbns:i:o:")) != -1){
+	while((c = getopt(argc, argv, "wfrhgbns:i:o:")) != -1){
 				
 		if( c == 'i'){
 			tr->infile = optarg;
@@ -76,6 +74,10 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 		}
 		else if(c == 'f'){
 			tr->op = flip;
+		}
+		else if (c == 'h') {
+			help_menu();
+			exit(0);
 		}
 		else if(c == '?'){
 			err = 1;
@@ -232,7 +234,6 @@ void init_transform(struct transform *tr)
 	tr->bm.data = NULL;
 	tr->infile = NULL;
 	tr->outfile = NULL;
-	tr->helpfile = "./help.txt";
 	tr->op = do_nothing;
 	tr->i_flag = 0;
 	tr->o_flag = 0;
@@ -242,30 +243,7 @@ void init_transform(struct transform *tr)
 	tr->w_flag = 0;
 	tr->bitplane_slice_num = 0;
 }
-/**@brief Display the help file for the user and exit the program
- *
- *@ret return type is void
- */
-int help_menu(struct transform *tr){
-	
-	FILE *help_file = NULL;
-	int c;
-	
-	help_file = fopen(tr->helpfile, "r");
 
-	if(!help_file){
-		fprintf(stderr, "Error opening the help file %s\n", tr->helpfile);
-		return -1;
-	}
-
-	while((c = getc(help_file)) != EOF){
-		putchar(c);
-	}
-	
-	fclose(help_file);
-	
-	return 0;
-}
 
 int main(int argc, char *argv[])
 {
