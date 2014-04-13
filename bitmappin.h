@@ -6,7 +6,6 @@
 int parse_input(int argc, char *argv[], struct transform *tr);
 int read_in_file(struct transform *tr);
 int write_out_file(struct transform *tr);
-int help_menu();
 void init_transform(struct transform *tr);
 
 	
