@@ -5,7 +5,7 @@
  *
  *@ret return type is void
  */
-void help_menu()
+void help_menu(void)
 {
 	printf(
 "This program is used to perform different image processing techniques on bmp files.  Currently, the program is being developed to support Microsoft Windows 3.x bmp files.\n\
