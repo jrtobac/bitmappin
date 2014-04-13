@@ -14,12 +14,11 @@ int bitplane_slice(struct transform *tr)
 {
 	int i;
 	int num_pixels = tr->bm.bh.height * tr->bm.bh.width;
-	char slice_mask = 1 << tr->bitplane_slice_num;
 
 	for (i = 0; i < num_pixels; i++) {
-		tr->bm.data[i].blue &= slice_mask;
-		tr->bm.data[i].green &= slice_mask;
-		tr->bm.data[i].red &= slice_mask;
+		tr->bm.data[i].blue &= tr->b_bps_mask;
+		tr->bm.data[i].green &= tr->g_bps_mask;
+		tr->bm.data[i].red &= tr->r_bps_mask;
 	}
 	
 	return 0;

@@ -135,7 +135,9 @@ void init_transform(struct transform *tr)
 	tr->g_flag = 0;
 	tr->b_flag = 0;
 	tr->w_flag = 0;
-	tr->bitplane_slice_num = 0;
+	tr->r_bps_mask = 0;
+	tr->g_bps_mask = 0;
+	tr->b_bps_mask = 0;
 }
 
 

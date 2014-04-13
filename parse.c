@@ -1,6 +1,67 @@
 #include "parse-int.h"
 #include "bitmappin-structs.h"
 
+int parse_bps_color(unsigned char *mask, char *optarg)
+{
+	unsigned char start = 0;
+	unsigned char end = 0;
+
+	while ((*optarg >= '0' && *optarg <= '7') || *optarg == '-') {
+		if (*optarg == '-') {
+			end = (*(optarg + 1)) - '0';
+			if (!(end <= 7)) {
+				fprintf(stderr, "Bad bitplane slice argument");
+				return -1;
+			}
+
+			for (; start <= end; start++) {
+				*mask |= 1 << start;
+			}
+
+		} else if (*(optarg + 1) != '-') {
+			(*mask) |= (1 << (*optarg - '0'));
+		} else {
+			start = *optarg - '0';
+		}
+		optarg++;
+	}
+	return 0;
+}
+
+int parse_bitplane_slice(struct transform *tr, char *optarg)
+{
+	int ret = 0;
+	tr->op = bitplane_slice;	
+	if (!*optarg) {
+		fprintf(stderr, "Warning: No bitplanes specified; Output will be white.\n");
+		return 0;
+	}
+	if (*optarg >= '0' && *optarg <= '7') {
+		ret = parse_bps_color(&tr->r_bps_mask, optarg);
+		ret &= parse_bps_color(&tr->g_bps_mask, optarg);
+		ret &= parse_bps_color(&tr->b_bps_mask, optarg);
+		return ret;
+	}
+	
+	while (*optarg) {
+		if (*optarg == 'r' || *optarg == 'R') {
+			ret = parse_bps_color(&tr->r_bps_mask, ++optarg);
+		} else if (*optarg == 'g' || *optarg == 'G') {
+			ret = parse_bps_color(&tr->g_bps_mask, ++optarg);
+		} else if (*optarg == 'b' || *optarg == 'B') {
+			ret = parse_bps_color(&tr->b_bps_mask, ++optarg);
+		} else if (*optarg != '-' && *optarg < '0' && *optarg > '7') {
+			fprintf(stderr, "Invalid bitplane slice argument");
+			ret = -1;
+		}
+		if (ret < 0) {
+			return ret;
+		}
+		optarg++;
+	}
+
+	return 0;
+}
 
 /**@brief Parses the command line input and populates tr with the info.
  *
@@ -31,14 +92,9 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 			o_flag = 1;
 		}
 		else if (c == 's') {
-			tr->bitplane_slice_num = *optarg - '0';
-			if (tr->bitplane_slice_num < 0 ||
-			    tr->bitplane_slice_num > 7) {
-				fprintf(stderr, 
-					"bitplane slice number must be 0-7\n");
+			if (parse_bitplane_slice(tr, optarg)) {
 				return -1;
 			}
-			tr->op = bitplane_slice;
 		}
 		else if(c == 'w'){
 			tr->w_flag = 1;
