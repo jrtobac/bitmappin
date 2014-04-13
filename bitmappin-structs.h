@@ -6,6 +6,7 @@
 #define FILE_AND_BITMAP_HDR_SIZE FILE_HDR_SIZE + BITMAP_HDR_SIZE
 #define FILE_EXTENSION ".bmp"
 #define MAX_PIXEL_VALUE 255
+#define MIN_PIXEL_VALUE 0
 
 struct file_header {
 	unsigned short padding;
@@ -60,6 +61,7 @@ struct transform {
 	char b_flag; //Max blue in image
 	char w_flag; //Turn image white
 	char bitplane_slice_num; //Which bitplane to slice
+	int thresholding_num; //Number to perform thresholding on
 };
 
 #endif //_BITMAPPIN_STRUCTS_H_
