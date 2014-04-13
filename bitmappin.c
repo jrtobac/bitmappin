@@ -6,9 +6,8 @@
 #include "operations.h"
 #include "print.h"
 #include "help.h"
+#include "bitmappin-structs.h"
 #include "parse.h"
-
-
 
 /**@brief read_in_file reads in a bitmap file specified by tr->infile and 
  * populates the rest of the tr->bm structure.

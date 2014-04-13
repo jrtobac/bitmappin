@@ -81,7 +81,7 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 	static char usage[] = "usage: %s -i infile.bmp [OPTIONS] -o outfile.bmp\n\nOPTIONS:\nw,r,g,b,f,s,n\n";
 
 	/* parse the command line arguments -i for input -o for output */
-	while((c = getopt(argc, argv, "wfrhgbns:i:o:")) != -1){
+	while((c = getopt(argc, argv, "t:wfrhgbns:i:o:")) != -1){
 				
 		if( c == 'i'){
 			tr->infile = optarg;
@@ -96,6 +96,17 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 				return -1;
 			}
 		}
+		else if (c == 't'){
+			tr->thresholding_num = strtol(optarg, NULL, 10);
+			if(tr->thresholding_num > MAX_PIXEL_VALUE ||
+			   tr->thresholding_num < MIN_PIXEL_VALUE){
+				fprintf(stderr, "thresholding number must be between %d and %d\n", MIN_PIXEL_VALUE, MAX_PIXEL_VALUE);
+				
+				return -1;
+			}
+			tr->op = thresholding;
+		}
+
 		else if(c == 'w'){
 			tr->w_flag = 1;
 			tr->op = max_color;
