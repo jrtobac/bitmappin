@@ -43,6 +43,10 @@ OPTIONS\n\
 -f\n\
 	Flip the image upside down\n\
 \n\
+-t <color(s)><range>\n\
+        Applies a threshold to an image to the specified colors according to the specified range\n \
+        Only specify a number to apply threshold to all colors\n\
+        ex: R20GB100-200\n\
 NOTE:\n\
 	If only the required fields are specified, the input file is simply copied into the output file\n\
 \n\

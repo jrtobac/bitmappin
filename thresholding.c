@@ -2,10 +2,12 @@
 #include "thresholding.h"
 
 
-/**@brief thresholding performs thresholding at a specified pixel for red green and blue
+/**@brief Thresholding performs thresholding on only the specified pixels at their corresponding values
  *
- * This function looks at the image pixel by pixel to see if the red, green, or blue values are greater than or less than the threshold.
- * if they are less than the threshold, that pixel and color value are set to zero, otherwise they are set to 255
+ * This function looks at the image pixel by pixel to see if the red, green, or blue has been set for thresholding
+ * If the input pixel values are greater than their specified end values, the pixel is set to 255
+ * If the input pixel values are less than their specified start values, tha pixel is to zero
+ * All pixels within the specified range and all non-set colors are not changed
  *
  *@args tr is a pointer to the struct transform which hold all the information for the function
  *
@@ -17,28 +19,32 @@ int thresholding(struct transform *tr){
 	
 	for( y = 0; y < tr->bm.bh.height; y++){
 		for( x = 0; x < tr->bm.bh.width; x++){
-			
-			if( tr->bm.data[y*tr->bm.bh.width + x].green < tr->thresholding_num){
-				tr->bm.data[y*tr->bm.bh.width + x].green = MIN_PIXEL_VALUE;
+			if(tr->r_set){
+				if(tr->bm.data[y * tr->bm.bh.width + x].red < tr->r_start){
+					tr->bm.data[y * tr->bm.bh.width + x].red = MIN_PIXEL_VALUE;
+				}
+				else if(tr->bm.data[y * tr->bm.bh.width + x].red > tr->r_end){
+					tr->bm.data[y * tr->bm.bh.width + x].red = MAX_PIXEL_VALUE;
+				}
 			}
-			else{
-				tr->bm.data[y*tr->bm.bh.width + x].green = MAX_PIXEL_VALUE;
+
+			if(tr->g_set){
+				if(tr->bm.data[y * tr->bm.bh.width + x].green < tr->g_start){
+					tr->bm.data[y * tr->bm.bh.width + x].green = MIN_PIXEL_VALUE;
+				}
+				else if(tr->bm.data[y * tr->bm.bh.width + x].green > tr->g_end){
+					tr->bm.data[y * tr->bm.bh.width + x].green = MAX_PIXEL_VALUE;
+				}
 			}
-			
-			if( tr->bm.data[y*tr->bm.bh.width + x].blue < tr->thresholding_num){
-				tr->bm.data[y*tr->bm.bh.width + x].blue = MIN_PIXEL_VALUE;
+
+			if(tr->b_set){
+				if(tr->bm.data[y * tr->bm.bh.width + x].blue < tr->b_start){
+					tr->bm.data[y * tr->bm.bh.width + x].blue = MIN_PIXEL_VALUE;
+				}
+				else if(tr->bm.data[y * tr->bm.bh.width + x].blue > tr->b_end){
+					tr->bm.data[y * tr->bm.bh.width + x].blue = MAX_PIXEL_VALUE;
+				}
 			}
-			else{
-				tr->bm.data[y*tr->bm.bh.width + x].blue = MAX_PIXEL_VALUE;
-			}
-			
-			if( tr->bm.data[y*tr->bm.bh.width + x].red < tr->thresholding_num){
-				tr->bm.data[y*tr->bm.bh.width + x].red = MIN_PIXEL_VALUE;
-			}
-			else{
-				tr->bm.data[y*tr->bm.bh.width + x].red = MAX_PIXEL_VALUE;
-			}
-			
 		}
 	}
 	

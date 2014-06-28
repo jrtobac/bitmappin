@@ -8,6 +8,10 @@
 #define MAX_PIXEL_VALUE 255
 #define MIN_PIXEL_VALUE 0
 
+typedef int bool;
+#define false 0
+#define true 1
+
 struct file_header {
 	unsigned short padding;
 	unsigned short file_type;
@@ -65,6 +69,22 @@ struct transform {
 	unsigned char b_bps_mask;
 	char bitplane_slice_num; //Which bitplane to slice
 	int thresholding_num; //Number to perform thresholding on
+
+	bool r_to_set;
+	bool g_to_set;
+	bool b_to_set;
+	bool r_set;
+	bool g_set;
+	bool b_set;
+
+	unsigned int r_start;
+	unsigned int g_start;
+	unsigned int b_start;
+	unsigned int r_end;
+	unsigned int g_end;
+	unsigned int b_end;
+	
+
 };
 
 #endif //_BITMAPPIN_STRUCTS_H_

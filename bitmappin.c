@@ -137,6 +137,23 @@ void init_transform(struct transform *tr)
 	tr->r_bps_mask = 0;
 	tr->g_bps_mask = 0;
 	tr->b_bps_mask = 0;
+
+	tr->r_set = false;
+	tr->g_set = false;
+	tr->b_set = false;
+
+	tr->r_to_set = false;
+	tr->g_to_set = false;
+	tr->b_to_set = false;
+
+	tr->r_start = 0;
+	tr->g_start = 0;
+	tr->b_start = 0;
+	
+	tr->r_end = 0;
+	tr->g_end = 0;
+	tr->b_end = 0;
+
 }
 
 
