@@ -238,13 +238,31 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 	int c, err = 0;
 	char i_flag = 0, o_flag = 0;
 	char *in_extension, *out_extension;
+	static int long_flag;
 
 	static char usage[] = "usage: %s -i infile.bmp [OPTIONS] -o outfile.bmp\n\nOPTIONS:\nw,r,g,b,f,s,n,t\n";
 
-	/* parse the command line arguments -i for input -o for output */
-	while((c = getopt(argc, argv, "t:wfrhgbns:i:o:")) != -1){
-				
-		if( c == 'i'){
+	while(1){
+		static struct option long_options[]={
+			{"max_red", 0, NULL, 'r'},
+			{"max_green", 0, NULL, 'g'},
+			{"max_blue", 0, NULL, 'b'},
+			{"max_all", 0, NULL, 'w'},
+			{"flip", 0, NULL, 'f'},
+			{"help", 0, NULL, 'h'},
+			{"copy", 0, NULL, 'n'},
+			{"slice", 1, NULL, 's'},
+			{"threshold", 1, NULL, 't'},
+		};
+
+		int opt_index = 0;
+		
+		c = getopt_long(argc, argv, "t:wfrhgbns:i:o:", long_options, &opt_index);
+
+		if(c == -1){
+			break;
+		}
+		else if( c == 'i'){
 			tr->infile = optarg;
 			i_flag = 1;
 		}
@@ -265,7 +283,6 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 				tr->op = thresholding;
 			}
 		}
-
 		else if(c == 'w'){
 			tr->w_flag = 1;
 			tr->op = max_color;
