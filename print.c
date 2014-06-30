@@ -1,9 +1,9 @@
 #include "bitmappin.h"
 #include "print.h"
 
-void print_bitmap_info(struct transform *tr)
+void print_bitmap_info(struct transform *tr, char *file)
 {
-	printf("--- File:%s ---\n", tr->infile);
+	printf("\n--- File %s ---\n", file);
 	printf("Magic:%x\n", tr->bm.fh.file_type);
 	printf("Size:%d\n", tr->bm.fh.file_size);
 	printf("Reserved1:%d\n", tr->bm.fh.res1);

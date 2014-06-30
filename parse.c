@@ -238,9 +238,6 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 	int c, err = 0;
 	char i_flag = 0, o_flag = 0;
 	char *in_extension, *out_extension;
-	static int long_flag;
-
-	static char usage[] = "usage: %s -i infile.bmp [OPTIONS] -o outfile.bmp\n\nOPTIONS:\nw,r,g,b,f,s,n,t\n";
 
 	while(1){
 		static struct option long_options[]={
@@ -250,14 +247,16 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 			{"max_all", 0, NULL, 'w'},
 			{"flip", 0, NULL, 'f'},
 			{"help", 0, NULL, 'h'},
-			{"copy", 0, NULL, 'n'},
+			{"negative", 0, NULL, 'n'},
 			{"slice", 1, NULL, 's'},
 			{"threshold", 1, NULL, 't'},
+			{"log_level", 1, NULL, 'l'},
+			{0, 0, 0, 0}
 		};
 
 		int opt_index = 0;
 		
-		c = getopt_long(argc, argv, "t:wfrhgbns:i:o:", long_options, &opt_index);
+		c = getopt_long(argc, argv, "l:t:wfrhgbns:i:o:", long_options, &opt_index);
 
 		if(c == -1){
 			break;
@@ -269,6 +268,13 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 		else if(c == 'o'){
 			tr->outfile = optarg;
 			o_flag = 1;
+		}
+		else if(c == 'l'){
+			tr->log_level = *optarg - '0';
+			if(tr->log_level > 2){
+				fprintf(stderr, "log_level must be 0-2\n");
+				return -1;
+			}
 		}
 		else if (c == 's') {
 			if (parse_bitplane_slice(tr, optarg)) {
@@ -317,29 +323,29 @@ int parse_input(int argc, char *argv[], struct transform *tr)
 	/* check for command line errors */
 	if (i_flag == 0) {
 		fprintf(stderr, "%s: missing -i option\n", argv[0]);
-		fprintf(stderr, usage, argv[0]);
-		return -1;
+		help_menu();
+		exit(0);
 	}
 	if(o_flag == 0) {
 		fprintf(stderr, "%s: missing -o option\n", argv[0]);
-		fprintf(stderr, usage, argv[0]);
-		return -1;
+		help_menu();
+		exit(0);
 	} 
 	if ((in_extension = strrchr(tr->infile, '.')) == NULL || 
 	    (strcmp(in_extension, FILE_EXTENSION) != 0 )) {
 		fprintf(stderr, "%s: bad input file extension\n", argv[0]);
-		fprintf(stderr, usage, argv[0]);
-		return -1;
+		help_menu();
+		exit(0);
 	}
 	if ((out_extension = strrchr(tr->outfile, '.')) == NULL ||
 	    (strcmp(out_extension, FILE_EXTENSION) != 0)) {
 		fprintf(stderr, "%s: bad output file extension\n", argv[0]);
-		fprintf(stderr, usage, argv[0]);
-		return -1;
+		help_menu();
+		exit(0);
 	}
 	if(err) {
-		fprintf(stderr, usage, argv[0]);
-		return -1;
+		help_menu();
+		exit(0);
 	}
 			
 	return 0;

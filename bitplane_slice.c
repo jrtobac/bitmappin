@@ -15,6 +15,15 @@ int bitplane_slice(struct transform *tr)
 	int i;
 	int num_pixels = tr->bm.bh.height * tr->bm.bh.width;
 
+	if(tr->log_level > 0){
+		printf("\nPerforming bitplance slicing\n");
+	}
+	if(tr->log_level == 2){
+		printf("Slicing blue with mask %d\n", tr->b_bps_mask);
+		printf("Slicing green with mask %d\n", tr->g_bps_mask);
+		printf("Slicing red with mask %d\n", tr->r_bps_mask);
+	}
+
 	for (i = 0; i < num_pixels; i++) {
 		tr->bm.data[i].blue &= tr->b_bps_mask;
 		tr->bm.data[i].green &= tr->g_bps_mask;

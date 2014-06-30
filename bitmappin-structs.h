@@ -1,6 +1,8 @@
 #ifndef _BITMAPPIN_STRUCTS_H_
 #define _BITMAPPIN_STRUCTS_H_
 
+#include <stdio.h>
+
 #define FILE_HDR_SIZE 14
 #define BITMAP_HDR_SIZE 40
 #define FILE_AND_BITMAP_HDR_SIZE FILE_HDR_SIZE + BITMAP_HDR_SIZE
@@ -84,7 +86,7 @@ struct transform {
 	unsigned int g_end;
 	unsigned int b_end;
 	
-
+	unsigned char log_level;
 };
 
 #endif //_BITMAPPIN_STRUCTS_H_

@@ -48,5 +48,21 @@ int thresholding(struct transform *tr){
 		}
 	}
 	
+	if(tr->log_level > 0){
+		printf("\nperforming thresholding\n");
+	}
+	if(tr->log_level == 2){
+		if(tr->r_set){
+			printf("thresholding red from %d - %d\n", tr->r_start, tr->r_end);
+		}
+		if(tr->g_set){
+			printf("thresholding green from %d - %d\n", tr->g_start, tr->g_end);
+		}
+		if(tr->r_set){
+			printf("thresholding blue from %d - %d\n", tr->b_start, tr->b_end);
+		}
+	}
+
+	
 	return 0;
 }

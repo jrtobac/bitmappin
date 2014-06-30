@@ -13,6 +13,10 @@ int flip(struct transform *tr)
 	int x, y;
 	int temp;
 
+	if(tr->log_level > 0){
+		printf("\nFlipping image\n");
+	}
+
 	for(y = 0; y < tr->bm.bh.height >> DIVIDE_BY_TWO; y++){
 		for(x = 0; x < tr->bm.bh.width; x++){
 			/* flip green */

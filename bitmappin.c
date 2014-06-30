@@ -22,7 +22,7 @@ int read_in_file(struct transform *tr)
 	size_t ret;
 	int r;
 	int i;
-
+	
 	in_file = fopen(tr->infile, "r");
 	if (!in_file) {
 		fprintf(stderr, "Error opening input file: %s\n", tr->infile);
@@ -58,6 +58,15 @@ int read_in_file(struct transform *tr)
 		}
 	}
 	
+	/* log */
+	if(tr->log_level > 0){
+		printf("Input file: %s\n", tr->infile);
+		printf("Output file: %s\n", tr->outfile);
+	}
+	if(tr->log_level == 2){
+		print_bitmap_info(tr, tr->infile);
+	}
+
 	fclose(in_file);
 	return 0;
 
@@ -82,7 +91,7 @@ int write_out_file(struct transform *tr)
 	FILE *out_file;
 	size_t ret;
 	int i;
-	
+
 	/* open file and write header */
 	out_file = fopen(tr->outfile, "w");
 	if (!out_file) {
@@ -103,6 +112,11 @@ int write_out_file(struct transform *tr)
 			fprintf(stderr, "Failed writing data to file\n");
 			goto out;
 		}
+	}
+
+	/* log */
+	if(tr->log_level == 2){
+		print_bitmap_info(tr, tr->outfile);
 	}
 
 	fclose(out_file);
@@ -153,6 +167,8 @@ void init_transform(struct transform *tr)
 	tr->r_end = 0;
 	tr->g_end = 0;
 	tr->b_end = 0;
+	
+	tr->log_level = 0;
 
 }
 

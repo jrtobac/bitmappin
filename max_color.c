@@ -13,14 +13,36 @@
  */
 int max_color(struct transform *tr)
 {
+	if(tr->log_level > 0){
+		printf("\nMaxing colors\n");
+	}
+
 	if (tr->w_flag) {
+		if(tr->log_level == 2){
+			printf("maxing all colors\n");
+		}
 		color_white(&tr->bm);
 		return 0;
 	}
 
-	if (tr->r_flag) max_red(&tr->bm);
-	if (tr->b_flag) max_blue(&tr->bm);
-	if (tr->g_flag) max_green(&tr->bm);
+	if (tr->r_flag){ 
+		if(tr->log_level == 2){
+			printf("maxing red colors\n");
+		}
+		max_red(&tr->bm);
+	}
+	if (tr->b_flag){
+		if(tr->log_level == 2){
+			printf("Maxing blue colors\n");
+		}
+		max_blue(&tr->bm);
+	}
+	if (tr->g_flag){
+		if(tr->log_level == 2){
+			printf("Maxing green colors\n");
+		}
+		max_green(&tr->bm);
+	}
 	
 	return 0;
 }
@@ -29,7 +51,7 @@ int max_color(struct transform *tr)
 void max_green(struct bitmap *bm)
 {
 	int x, y;
-  
+ 
 	for ( y = 0; y < bm->bh.height; y++){
 		for ( x = 0; x < bm->bh.width; x++){
 			bm->data[bm->bh.height * y + x].green =  MAX_PIXEL_VALUE;

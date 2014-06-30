@@ -13,14 +13,17 @@ void help_menu(void)
 usage: bitmappin -i <input_file.bmp> [options...] -o <output_file.bmp>\n\
 \n\
 OPTIONS\n\
--h\n\
+--help -h\n\
 	An optional flag to list the help file of the program\n\
 \n\
--i intput_file.bmp\n\
+-i <intput_file.bmp>\n\
 	A required flag and argument to specify the input file that to process\n\
 \n\
--o output_file.bmp\n\
+-o <output_file.bmp>\n\
 	A requited flag and argument to specify the output bmp file\n\
+\n\
+--log_level -l <n>\n\
+        Log level 0 = none 1 = brief 2 = verbose\n\
 \n\
 --max_all -w\n\
 	Max out the red, green and blue values of the bmp file\n\
@@ -34,7 +37,7 @@ OPTIONS\n\
 --max_blue -b\n\
 	Max out the blue values of the bmp file\n\
 \n\
---copy -n\n\
+--negative -n\n\
 	Create a negative of the input image\n\
 \n\
 --slice -s <n>\n\
@@ -43,10 +46,8 @@ OPTIONS\n\
 --flip -f\n\
 	Flip the image upside down\n\
 \n\
---threshold -t <color(s)><range>\n\
+--threshold -t <RGB><n-n>\n\
         Applies a threshold to an image to the specified colors according to the specified range\n \
-        Only specify a number to apply threshold to all colors\n\
-        ex: R20GB100-200\n\
 NOTE:\n\
 	If only the required fields are specified, the input file is simply copied into the output file\n\
 \n\

@@ -15,7 +15,11 @@
 int image_negative(struct transform *tr)
 {
 	int x, y;
-	
+
+	if(tr->log_level > 0){
+		printf("\nTransforming image into negative\n\n");
+	}
+			
 	for(y = 0; y < tr->bm.bh.height; y++){
 		for(x=0; x< tr->bm.bh.width; x++){
 			tr->bm.data[tr->bm.bh.height * y + x].green = MAX_PIXEL_VALUE - tr->bm.data[tr->bm.bh.height * y + x].green;

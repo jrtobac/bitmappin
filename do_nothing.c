@@ -13,6 +13,10 @@
  */
 int do_nothing(struct transform *tr)
 {
+	if(tr->log_level > 0){
+		printf("\nCopying input to output\n\n");
+	}
+
 	fprintf(stdout, "No operation specified. %s copied to %s.\n",
 		tr->infile, tr->outfile);
 	return 0;
